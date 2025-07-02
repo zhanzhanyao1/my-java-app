@@ -1,8 +1,12 @@
 global:
-  scrape_interval: 15s # 每15秒抓取指标
+  scrape_interval: 15s
 
 scrape_configs:
   - job_name: 'my-java-app'
-    metrics_path: '/metrics'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['my-java-app:8080']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
