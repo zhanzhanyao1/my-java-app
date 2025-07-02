@@ -42,5 +42,14 @@ terraform.tfstate
 terraform.tfstate.backup
 .terraform/
 .terraform.lock.hcl
+*.tfplan
+terraform/ec2plan
+
+# === Docker ===
+.dockerignore
+*.log
+
+# === GitHub Secrets / SSH Key ===
+*.pem
 
 secrets/
