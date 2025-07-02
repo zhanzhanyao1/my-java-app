@@ -1,7 +1,18 @@
 package com.example;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+
+@SpringBootApplication
+@RestController
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello Hello world!");
+        SpringApplication.run(App.class, args);
+    }
+
+    @GetMapping("/")
+    public String hello() {
+        return "Hello world from Spring Boot-2!";
     }
 }
