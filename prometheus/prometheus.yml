@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s # 每15秒抓取指标
+
+scrape_configs:
+  - job_name: 'my-java-app'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['my-java-app:8080']
