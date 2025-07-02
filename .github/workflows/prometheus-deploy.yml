@@ -15,7 +15,17 @@ jobs:
       - name: ✅ 拉取项目源码
         uses: actions/checkout@v3
 
-      - name: 🔐 SSH 到 EC2 并更新配置
+      - name: 🔐 上传 Prometheus 配置文件到 EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "prometheus/prometheus.yml"
+          target: "~/prometheus/prometheus.yml"
+
+      - name: 🔐 SSH 到 EC2 并重启 Prometheus 容器
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -23,19 +33,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            echo "📥 传输 Prometheus 配置"
-            mkdir -p ~/prometheus/
-            cat > ~/prometheus/prometheus.yml << EOF
-  $(cat prometheus/prometheus.yml)
-  EOF
-  
-  echo "🔁 重启 Prometheus 容器"
-  docker stop prometheus || true
-  docker rm prometheus || true
-  docker run -d \
-  --name prometheus \
-  -p 9090:9090 \
-  -v ~/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
-  prom/prometheus
-  
-  echo "✅ Prometheus 已重新启动"
+            docker stop prometheus || true
+            docker rm prometheus || true
+            docker run -d \
+              --name prometheus \
+              -p 9090:9090 \
+              -v ~/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+              prom/prometheus
+            echo "✅ Prometheus 已重新启动"
