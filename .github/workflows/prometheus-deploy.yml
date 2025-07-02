@@ -1,0 +1,41 @@
+name: Prometheus配置部署流程
+
+on:
+  push:
+    paths:
+      - 'prometheus/prometheus.yml'
+    branches: [ main ]
+
+jobs:
+  deploy_prometheus:
+    name: 📊 部署 Prometheus 配置
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ✅ 拉取项目源码
+        uses: actions/checkout@v3
+
+      - name: 🔐 SSH 到 EC2 并更新配置
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "📥 传输 Prometheus 配置"
+            mkdir -p ~/prometheus-config/
+            cat > ~/prometheus-config/prometheus.yml << 'EOF'
+            $(cat prometheus/prometheus.yml)
+            EOF
+
+            echo "🔁 重启 Prometheus 容器"
+            docker stop prometheus || true
+            docker rm prometheus || true
+            docker run -d \
+              --name prometheus \
+              -p 9090:9090 \
+              -v ~/prometheus-config/prometheus.yml:/etc/prometheus/prometheus.yml \
+              prom/prometheus
+
+            echo "✅ Prometheus 已重新启动"
