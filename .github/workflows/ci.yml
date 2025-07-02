@@ -1,24 +1,26 @@
-name: Java CI/CD with Docker and EC2
+name: Java项目自动部署流程（CI/CD）
 
 on:
   push:
-    branches: [ main ] # 当你 push 到 main 分支时触发
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  构建并部署:
     runs-on: ubuntu-latest
 
     steps:
-      - name: ✅ 拉取代码
+      - name: ✅ 拉取项目源码
         uses: actions/checkout@v2
 
-      - name: ☕ 设置 JDK 17
+      - name: ☕ 安装 Java 17 环境
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🛠️ Maven 构建
+      - name: 🔧 使用 Maven 构建项目
         run: mvn clean install
 
       - name: 🐳 构建 Docker 镜像
@@ -30,17 +32,29 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: 📤 推送 Docker 镜像到 Docker Hub
+      - name: 🚀 推送镜像到 Docker Hub
         run: docker push zhanyaodocker/my-java-app:latest
 
-      - name: 🚀 SSH 部署到 AWS EC2
+      - name: 📦 SSH 登录 EC2 实例并部署容器
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.EC2_KEY }}
+          port: 22
           script: |
-            docker pull zhanyaodocker/my-java-app:latest
+            echo "🛑 停止旧容器（如果有）"
             docker stop my-java-app || true
             docker rm my-java-app || true
+            
+            echo "🔍 检查端口占用（8080）并释放"
+            PID=$(lsof -ti:8080) && [ -n "$PID" ] && echo "Killing PID $PID" && kill -9 $PID || echo "Port 8080 is free"
+            
+            echo "📥 拉取最新镜像"
+            docker pull zhanyaodocker/my-java-app:latest
+            
+            echo "🚀 启动新容器"
             docker run -d -p 8080:8080 --name my-java-app zhanyaodocker/my-java-app:latest
+            
+            echo "✅ 当前运行的容器列表："
+            docker ps
