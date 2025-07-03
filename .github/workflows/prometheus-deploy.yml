@@ -22,8 +22,8 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          source: "prometheus/prometheus.yml"
-          target: "~/prometheus/prometheus.yml"
+          source: "prometheus/"
+          target: "~/prometheus/"
 
       - name: 🔐 SSH 到 EC2 并重启 Prometheus 容器
         uses: appleboy/ssh-action@v0.1.10
@@ -38,6 +38,6 @@ jobs:
             docker run -d \
               --name prometheus \
               -p 9090:9090 \
-              -v /home/ec2-user/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+              -v /home/ec2-user/prometheus/:/etc/prometheus/ \
               prom/prometheus
             echo "✅ Prometheus 已重新启动"
