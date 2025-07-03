@@ -38,6 +38,6 @@ jobs:
             docker run -d \
               --name prometheus \
               -p 9090:9090 \
-              -v ~/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+              -v /home/ec2-user/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
               prom/prometheus
             echo "✅ Prometheus 已重新启动"
