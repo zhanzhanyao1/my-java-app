@@ -56,7 +56,7 @@ EC2_SSH_KEY
 
 2. 在pom.xml 中添加Prometheus依赖
 3. 添加配置文件（src/main/resources/application.properties）
-4. 确保在 EC2 上使用 Docker 运行 Prometheus
-
+4. 创建Prometheus-deploy workflow，自动部署Prometheus 
+`my-java-app/.github/workflows/prometheus-deploy.yml`
 
 
