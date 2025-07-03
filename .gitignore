@@ -45,7 +45,6 @@ terraform.tfstate.backup
 terraform/ec2plan
 
 # === Docker ===
-.dockerignore
 *.log
 
 # === GitHub Secrets / SSH Key ===
