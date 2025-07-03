@@ -23,7 +23,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           source: "prometheus/"
-          target: "~/prometheus/"
+          target: "~/"
 
       - name: 🔐 SSH 到 EC2 并重启 Prometheus 容器
         uses: appleboy/ssh-action@v0.1.10
