@@ -36,6 +36,7 @@ build/
 .DS_Store
 
 # === Terraform ===
+terraform/terraform.tfvars
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
