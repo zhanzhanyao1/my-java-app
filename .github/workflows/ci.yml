@@ -1,12 +1,12 @@
-name: Java CI/CD with Docker and EC2
+name: Java CI with Docker
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches: [main]
 
 jobs:
-  build_and_deploy:
-    name: 构建 & 推送 & 部署 🚀
+  ci:
+    name: CI Checks
     runs-on: ubuntu-latest
 
     env:
@@ -14,16 +14,16 @@ jobs:
       TAG: ${{ github.sha }}
 
     steps:
-      - name: ✅ 拉取代码
+      - name: ✅ Checkout code
         uses: actions/checkout@v3
 
-      - name: ☕ 安装 Java 17
+      - name: ☕ Setup Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 📦 缓存 Maven 依赖
+      - name: 📦 Cache Maven dependencies
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -33,51 +33,29 @@ jobs:
       - name: Run Spotless format check
         run: mvn spotless:check
 
-      - name: ✅ 执行单元测试
+      - name: ✅ Run unit tests
         run: mvn test
 
-      - name: 🔧 构建 Java 项目
+      - name: 🔧 Build project
         run: mvn clean package -DskipTests
 
-      - name: 📤 上传构建产物 (JAR)
+      - name: 📤 Upload artifact(JAR)
         uses: actions/upload-artifact@v4
         with:
           name: my-java-app-jar
           path: target/*.jar
 
-      - name: 🐳 构建 Docker 镜像并打 tag
+      - name: 🐳 Build Docker image with tags
         run: |
           docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$TAG .
 
-      - name: 🔐 登录 Docker Hub
+      - name: 🔐 Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: 🚀 推送镜像到 Docker Hub
+      - name: 🚀 Push Docker image to Docker Hub
         run: |
           docker push $IMAGE_NAME:latest
           docker push $IMAGE_NAME:$TAG
-
-      - name: 📦 SSH 登录 EC2 并部署容器
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          script: |
-            IMAGE_NAME=zhanyaodocker/my-java-app
-            echo "🛑 停止旧容器（如果有）"
-            docker stop my-java-app || true
-            docker rm my-java-app || true
-
-            echo "📥 拉取最新镜像"
-            docker pull $IMAGE_NAME:latest
-
-            echo "🚀 启动容器"
-            docker run -d -p 8080:8080 --name my-java-app $IMAGE_NAME:latest
-
-            echo "✅ 当前运行中的容器："
-            docker ps
