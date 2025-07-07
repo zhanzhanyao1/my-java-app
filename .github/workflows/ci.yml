@@ -34,7 +34,7 @@ jobs:
         run: mvn clean package -DskipTests
 
       - name: 📤 上传构建产物 (JAR)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-java-app-jar
           path: target/*.jar
