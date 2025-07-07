@@ -5,7 +5,7 @@ scrape_configs:
   - job_name: 'my-java-app'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['my-java-app:8080']
+      - targets: ['3.6.41.223:8080']
 
   - job_name: 'prometheus'
     static_configs:
