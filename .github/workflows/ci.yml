@@ -62,6 +62,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            IMAGE_NAME=zhanyaodocker/my-java-app
             echo "🛑 停止旧容器（如果有）"
             docker stop my-java-app || true
             docker rm my-java-app || true
