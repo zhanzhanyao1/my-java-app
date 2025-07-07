@@ -30,6 +30,12 @@ jobs:
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-${{ runner.os }}-
 
+      - name: Run Spotless format check
+        run: mvn spotless:check
+
+      - name: ✅ 执行单元测试
+        run: mvn test
+
       - name: 🔧 构建 Java 项目
         run: mvn clean package -DskipTests
 
