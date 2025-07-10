@@ -1,0 +1,54 @@
+name: Terraform Deploy
+
+on:
+  push:
+    paths:
+      - 'terraform/**'
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Plan
+        id: tf_plan
+        working-directory: terraform
+        run: terraform plan -out=plan.out
+
+      - name: Show Plan JSON
+        working-directory: terraform
+        run: terraform show -json plan.out > plan.json
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan
+          path: terraform/plan.out
+
+      - name: Detect Changes
+        id: check_changes
+        working-directory: terraform
+        run: |
+          CHANGES=$(jq '.resource_changes | length' plan.json)
+          echo "Changed resources: $CHANGES"
+          if [ "$CHANGES" -eq 0 ]; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "no_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Terraform Apply
+        if: steps.check_changes.outputs.no_changes == 'false'
+        working-directory: terraform
+        run: terraform apply -auto-approve plan.out
