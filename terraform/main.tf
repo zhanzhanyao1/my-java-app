@@ -4,7 +4,18 @@ resource "aws_instance" "example" {
   key_name               = var.key_name
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
-
+  user_data = base64encode(<<-EOF
+  #!/bin/bash
+  echo "=== user-data script started ===" >> /var/log/user-data.log
+  yum update -y
+  amazon-linux-extras enable docker
+  yum install -y docker
+  systemctl start docker
+  systemctl enable docker
+  usermod -aG docker ec2-user
+  echo "=== user-data script finished ===" >> /var/log/user-data.log
+EOF
+)
 
   tags = {
     Name        = "MyJavaAppInstance"
