@@ -8,4 +8,4 @@ groups:
           severity: critical
         annotations:
           summary: "my-java-app down"
-          description: "my-java-app down。"
+          description: "my-java-app is down for 1 minute"
