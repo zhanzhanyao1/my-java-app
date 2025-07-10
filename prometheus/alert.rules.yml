@@ -1,0 +1,11 @@
+groups:
+  - name: my-java-app-alerts
+    rules:
+      - alert: MyJavaAppDown
+        expr: up{job="my-java-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "my-java-app down"
+          description: "my-java-app down。"
