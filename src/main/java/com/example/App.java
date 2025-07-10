@@ -13,6 +13,6 @@ public class App {
 
     @GetMapping("/")
     public String hello() {
-        return "Hello world from Spring Boot-7!";
+        return "Hello world from Spring Boot-8!";
     }
 }
