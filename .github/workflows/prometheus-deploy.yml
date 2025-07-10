@@ -3,7 +3,7 @@ name: Prometheus配置部署流程
 on:
   push:
     paths:
-      - 'prometheus/prometheus.yml'
+      - 'prometheus/**'
     branches: [ main ]
 
 jobs:
