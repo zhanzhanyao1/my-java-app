@@ -35,14 +35,22 @@ build/
 ### Mac OS ###
 .DS_Store
 
-# === Terraform ===
-terraform/terraform.tfvars
+### Terraform ###
+# Terraform 状态文件
 terraform.tfstate
-terraform.tfstate.backup
+terraform.tfstate.*
+# Terraform 缓存目录
 .terraform/
-.terraform.lock.hcl
+# 依赖锁文件（视团队习惯，建议提交）
+# .terraform.lock.hcl
+# Terraform 计划文件
 *.tfplan
+plan.out
+plan.json
 terraform/ec2plan
+# 变量文件（敏感信息）
+terraform/terraform.tfvars
+
 
 # === Docker ===
 *.log
