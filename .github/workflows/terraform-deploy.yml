@@ -31,7 +31,7 @@ jobs:
         run: terraform show -json plan.out > plan.json
 
       - name: Upload Plan Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
           path: terraform/plan.out
