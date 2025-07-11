@@ -1,12 +1,13 @@
 name: Terraform CD
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  terraform:
+  deploy:
+    name: Terraform Deploy EC2
     runs-on: ubuntu-latest
 
     env:
@@ -15,41 +16,52 @@ jobs:
       TF_VAR_ami_id: ${{ secrets.TF_VAR_ami_id }}
       TF_VAR_instance_type: ${{ secrets.TF_VAR_instance_type }}
 
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.8.5
 
-      - name: Setup SSH private key
+      - name: Setup SSH Private Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > ./id_rsa
-          chmod 600 ./id_rsa
+          echo "${{ secrets.EC2_SSH_KEY }}" > id_rsa
+          chmod 600 id_rsa
+        shell: bash
 
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan -out=plan.out
+          terraform plan -var="private_key_path=./id_rsa" -out=plan.out
           terraform show -json plan.out > plan.json
 
+      - name: Check for Changes
+        id: check
+        run: |
+          CHANGES=$(jq '.resource_changes | length' plan.json)
+          echo "Changes detected: $CHANGES"
+          echo "changes=$CHANGES" >> $GITHUB_OUTPUT
+
+      - name: Terraform Apply (only if changes)
+        if: steps.check.outputs.changes != '0'
+        run: terraform apply -auto-approve plan.out
+
       - name: Upload Plan Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan
-          path: terraform/plan.out
+          path: terraform/plan.*
 
-      - name: Check if there are changes
-        id: check_changes
-        run: |
-          changes=$(jq '.resource_changes | length' plan.json)
-          echo "changes=$changes" >> $GITHUB_OUTPUT
-
-      - name: Terraform Apply
-        if: steps.check_changes.outputs.changes != '0'
-        run: terraform apply -auto-approve plan.out
