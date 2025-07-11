@@ -2,6 +2,8 @@ name: Java CI with Docker
 
 on:
   pull_request:
+    paths:
+      - 'src/**'
     branches: [main]
 
 jobs:
