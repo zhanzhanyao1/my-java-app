@@ -23,3 +23,8 @@ variable "key_name" {
   description = "用于 SSH 登录的 Key Pair 名称"
   type        = string
 }
+
+variable "private_key_path" {
+  description = "Path to the SSH private key"
+  type        = string
+}
