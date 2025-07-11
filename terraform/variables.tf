@@ -3,11 +3,6 @@ variable "aws_region" {
   type        = string
 }
 
-variable "aws_profile" {
-  description = "AWS CLI profile 名"
-  type        = string
-}
-
 variable "instance_type" {
   description = "EC2 实例类型"
   type        = string
