@@ -19,6 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.5
+
       - name: Setup SSH private key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > ./id_rsa
