@@ -30,6 +30,7 @@ jobs:
           terraform_version: 1.8.5
 
       - name: Setup SSH Private Key
+
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > id_rsa
           chmod 600 id_rsa
