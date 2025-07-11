@@ -4,18 +4,7 @@ resource "aws_instance" "example" {
   key_name               = var.key_name
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.allow_ssh_http.id]
-  user_data = base64encode(<<-EOF
-  #!/bin/bash
-  echo "=== user-data script started ===" >> /var/log/user-data.log
-  yum update -y
-  amazon-linux-extras enable docker
-  yum install -y docker
-  systemctl start docker
-  systemctl enable docker
-  usermod -aG docker ec2-user
-  echo "=== user-data script finished ===" >> /var/log/user-data.log
-EOF
-)
+  user_data = file("${path.module}/install.sh")
 
   tags = {
     Name        = "MyJavaAppInstance"
@@ -65,6 +54,19 @@ resource "aws_security_group" "allow_ssh_http" {
     security_groups  = []
     self             = false
   }
+
+    # 允许本地调试(8080)
+    ingress {
+      description      = "Local"
+      from_port        = 8080
+      to_port          = 8080
+      protocol         = "tcp"
+      cidr_blocks      = ["0.0.0.0/0"]  # 生产环境同样建议限制访问IP范围
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      security_groups  = []
+      self             = false
+    }
 
   # 出站规则，允许所有流量出去
   egress {
