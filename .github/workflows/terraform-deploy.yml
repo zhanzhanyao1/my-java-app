@@ -40,7 +40,7 @@ jobs:
         shell: bash
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -input=false
 
       - name: Terraform Format Check
         run: terraform fmt -check
