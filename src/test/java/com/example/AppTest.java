@@ -17,6 +17,6 @@ class AppTest {
     @Test
     void helloEndpointReturnsExpectedMessage() {
         String body = this.restTemplate.getForObject("/", String.class);
-        assertThat(body).isEqualTo("Hello world from Spring Boot-9!");
+        assertThat(body).isEqualTo("Hello world from Spring Boot-10!");
     }
 }
