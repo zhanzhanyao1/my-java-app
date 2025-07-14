@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -euxo pipefail
 echo "=== user-data script started ===" >> /var/log/user-data.log
 
