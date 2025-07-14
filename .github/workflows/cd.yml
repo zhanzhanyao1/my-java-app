@@ -1,4 +1,4 @@
-name: Java Deploy to EC2
+name: my-java-app CD
 
 on:
   push:

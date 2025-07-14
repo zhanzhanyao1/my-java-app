@@ -1,4 +1,4 @@
-name: Java CI with Docker
+name: my-java-app CI
 
 on:
   pull_request:
