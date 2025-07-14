@@ -1,4 +1,4 @@
-name: Prometheus配置部署流程
+name: Prometheus CD
 
 on:
   push:
