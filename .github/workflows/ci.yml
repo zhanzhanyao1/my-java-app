@@ -6,7 +6,6 @@ on:
 
 jobs:
   ci:
-    name: CI Checks
     runs-on: ubuntu-latest
 
     env:
