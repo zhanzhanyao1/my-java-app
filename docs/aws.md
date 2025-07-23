@@ -1,3 +1,46 @@
+### ✅ AWS 学习进度表
+
+| 分类           | 服务名称                  | 是否已学习 | 学习优先级 | 说明                           |
+|----------------|---------------------------|-------------|-------------|--------------------------------|
+| **计算服务**   | EC2                       | ✅ 是       | ⭐⭐⭐⭐       | 虚拟机，核心计算服务           |
+|                | Auto Scaling (ASG)        | ✅ 是       | ⭐⭐⭐⭐       | 自动弹性伸缩                   |
+|                | Elastic Beanstalk         | ✅ 是       | ⭐⭐         | 应用托管平台                   |
+|                | ECS (Fargate)             | ✅ 是       | ⭐⭐⭐⭐       | 容器编排服务                   |
+|                | EKS                       | 🕒 尚未     | ⭐⭐         | Kubernetes 托管服务            |
+|                | Lambda                    | 🕒 尚未     | ⭐⭐⭐⭐       | 无服务器计算                   |
+|                | App Runner                | ✅ 是       | ⭐⭐         | 部署小型容器应用               |
+| **存储服务**   | S3                        | ✅ 是       | ⭐⭐⭐⭐       | 对象存储服务                   |
+|                | EBS                       | ✅ 是       | ⭐⭐⭐        | EC2 块存储                     |
+|                | EFS                       | ✅ 是       | ⭐⭐         | 网络文件系统                   |
+|                | FSx                       | 🚫 跳过     | ❌          | 高性能文件系统（可跳过）       |
+|                | AWS Snow Family           | 🚫 跳过     | ❌          | 离线数据迁移设备（可跳过）     |
+| **数据库**     | RDS                       | ✅ 是       | ⭐⭐⭐⭐       | 关系型数据库                   |
+|                | Aurora                    | ✅ 是       | ⭐⭐⭐⭐       | 高性能 RDS                     |
+|                | DynamoDB                  | 🕒 尚未     | ⭐⭐⭐        | 无服务器 NoSQL 数据库         |
+|                | ElastiCache               | ✅ 是       | ⭐⭐         | Redis/Memcached 缓存服务      |
+| **网络 & CDN** | VPC                       | 🕒 尚未     | ⭐⭐⭐⭐       | 网络基础设施                   |
+|                | ELB (ALB/NLB)             | ✅ 是       | ⭐⭐⭐⭐       | 负载均衡器                     |
+|                | Route 53                  | ✅ 是       | ⭐⭐⭐        | DNS 服务                       |
+|                | CloudFront                | 🚫 跳过     | ❌          | CDN 加速服务（可跳过）         |
+|                | Global Accelerator        | 🚫 跳过     | ❌          | 网络加速器（可跳过）           |
+| **消息队列**   | SQS                       | ✅ 是       | ⭐⭐⭐⭐       | 解耦队列服务                   |
+|                | SNS                       | ✅ 是       | ⭐⭐⭐        | 推送/发布订阅服务              |
+|                | Kinesis                   | ✅ 是       | ⭐⭐         | 实时数据流处理                 |
+| **容器服务**   | ECR                       | ✅ 是       | ⭐⭐⭐        | 容器镜像仓库                   |
+|                | ECS                       | ✅ 是       | ⭐⭐⭐⭐       | 容器编排服务                   |
+|                | EKS                       | 🕒 尚未     | ⭐⭐         | 托管 Kubernetes                |
+| **监控安全**   | CloudWatch                | 🕒 尚未     | ⭐⭐⭐⭐       | 日志与指标监控                 |
+|                | CloudTrail                | 🕒 尚未     | ⭐⭐⭐        | API 审计日志                   |
+|                | Config                    | 🕒 尚未     | ⭐⭐         | 合规性追踪                     |
+|                | KMS                       | 🕒 尚未     | ⭐⭐⭐        | 密钥管理服务                   |
+|                | IAM                       | ✅ 是       | ⭐⭐⭐⭐       | 权限管理核心                   |
+|                | SSM Parameter Store       | 🕒 尚未     | ⭐⭐         | 运维配置与参数存储             |
+
+
+
+
+
+
 ### IAM
 - Users & Groups
 - root user & IAM user
@@ -147,3 +190,57 @@ EC2+EBS-> EC2+EFS
 2. 优化动因：解决单实例 EBS 存储图片的局限性，支持多实例多可用区访问相同文件 ,单实例 + EBS 可用，但多实例多 AZ 时，EBS 卷仅挂载在单个实例，其他实例无法访问对应数据。 多实例环境下，图片上传和读取出现数据不一致和访问失败问题。
 - 优化方案：用 EFS（Elastic File System）替代 EBS，作为共享网络文件存储 :EFS 通过 ENI（弹性网络接口）挂载到各个 AZ 的 EC2 实例，实现统一文件访问。 ,支持多实例、多 AZ 共享同一文件存储，保证图片上传与读取一致。
 -优化后挑战：EFS 成本高于 EBS，持续成本上升。 网络存储带来的性能瓶颈需评估，尤其对高并发访问场景。 需管理和维护网络文件系统的权限和性能。
+
+### Elastic Beanstalk
+- create application -> upload version -> launch env -> manage env
+- Env tier:Web Server Tier(ELB)/Worker Tier(SQS)
+- Deployment Modes: single instance(elastic IP + EC2 instance +RDS Master)/ High availability with load balancer(ALB +ACG + RDS master/standby)
+
+
+### Amazon S3
+- key(full path)-Object(files)
+- S3 -> Buckets -> \[folder] -> object
+- Security: user-based/resource-based 
+- Versioning(bucket level)
+- Replication Rule(Cross-Region/Same-region)
+- S3 Storage classes
+- Lifecycle rules
+- Amazon S3 Analytics
+- Requester pays(download networking cost)
+- S3 Event: can be sent to SQS,SNS, Lambda
+- Performance
+- Bulk Operation: S3 Inventory(get objectList)-> Athena(filter) -> S3 Bulk Operation
+- S3 Store Lens: analyse org/accs/regions/buckets
+- encryption:skip for now
+
+###  CloudFront
+- skip
+### Global Accelerator
+- skip
+###  AWS Snow Family
+- skip
+###  Amazon FSx
+- skip
+
+### Decoupling application:
+- SQS
+- Producer -> SQS -> Consumer(pull data)
+- Visibility Timeout
+- Long Polling
+- SQS+ASG+cloudwatch Metric-queue + cloudwatch alarm
+- SNS(push data)
+- Fan-out: publisher -> 1 SNS -> n SQS
+- Message filtering for subscriber
+
+### Container on AWS
+- ECS
+- EC2 Launch type/Fargate Launch type
+- ECS task roles
+- Load Balancer + ECS Cluster
+- EFS + ECS Cluster
+- ECS cluster：Task definition->create tasks or services
+- ECS Auto scaling
+- ECR
+- EKS skip for now
+- AWS App Runner
+- AWS App2Container
